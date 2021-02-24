@@ -62,7 +62,7 @@ def load_model(file_path):
         unpacked_hdf5 = unpack_recursive_hdf5(h)
 
     # Create a new instance of the Sequential class
-    rebuilt_model = ml_files.Sequential()
+    rebuilt_model = PySoap.Sequential()
     rebuilt_model.loss_function = unpacked_hdf5['loss_function']
     rebuilt_model.metric_function = unpacked_hdf5['metric_function'] if 'metric_function' in unpacked_hdf5 else None
 
@@ -70,7 +70,7 @@ def load_model(file_path):
     optimizer_names, optimizer_attributes = unpacked_hdf5['optimizer_names'], unpacked_hdf5['optimizer_attributes']
     for optimizer_ in ['optimizer_bias', 'optimizer_weights']:
         # Create instance of optimizer
-        rebuilt_model.__dict__[optimizer_] = ml_files.optimizers.__dict__[optimizer_names[optimizer_]]()
+        rebuilt_model.__dict__[optimizer_] = PySoap.optimizers.__dict__[optimizer_names[optimizer_]]()
 
         # Update optimizer attributes
         rebuilt_model.__dict__[optimizer_].__dict__.update(optimizer_attributes[optimizer_])
@@ -82,7 +82,7 @@ def load_model(file_path):
     for i in range(1, num_layers + 1):
         name, attributes = layer_names[str(i)], layer_attributes[str(i)]
 
-        layer_class = ml_files.layers.__dict__[name]  # Get the layer class object
+        layer_class = PySoap.layers.__dict__[name]  # Get the layer class object
 
         sig = signature(layer_class.__init__).parameters
         kwargs = {key: attributes[key] for key in sig.keys() if key in attributes}
