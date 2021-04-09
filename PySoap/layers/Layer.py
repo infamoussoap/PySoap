@@ -20,7 +20,7 @@ class Layer(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def predict(self, z, output_only=True):
+    def predict(self, z, output_only=True, pre_activation_of_input=None):
         """ When the predict method is called in the `sequential` class it invokes this
             method. This method is to perform the forward propagation of this current layer
 

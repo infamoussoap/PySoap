@@ -255,7 +255,7 @@ class Conv_2D(Layer):
 
         self.built = True
 
-    def predict(self, z, output_only=True):
+    def predict(self, z, output_only=True, pre_activation_of_input=None):
         """ Returns the output of this layer
 
             Parameters

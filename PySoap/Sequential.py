@@ -80,12 +80,13 @@ class Sequential:
                 working_z = self.layers[i].predict(working_z, output_only=True)
             return working_z
         else:
-            a_dict = {}
+            a_dict = {0: None}
             z_dict = {0: x_train}
 
             for i in range(1, self.n + 1):
                 current_layer = self.layers[i]
-                a_dict[i], z_dict[i] = current_layer.predict(z_dict[i - 1], output_only=False)
+                a_dict[i], z_dict[i] = current_layer.predict(z_dict[i - 1], output_only=False,
+                                                             pre_activation_of_input=a_dict[i - 1])
 
                 i += 1
             return a_dict, z_dict
@@ -189,7 +190,11 @@ class Sequential:
         # next layer in the network
         for i in range(self.n, 2, -1):  # i = 1 is the Input class, no backpropagation needed
             grad_dict[i] = self.layers[i].get_weight_grad_(delta_dict[i], z_dict[i - 1])
-            g_prime = self.layers[i - 1].activation_function_(a_dict[i - 1], grad=True)
+
+            if type(self.layers[i - 1]).__name__ == 'Flatten' and type(self.layers[i - 2]).__name__ != 'Input':
+                g_prime = self.layers[i - 2].activation_function_(a_dict[i - 1], grad=True)
+            else:
+                g_prime = self.layers[i - 1].activation_function_(a_dict[i - 1], grad=True)
             if type(self.layers[i]).__name__ in ['SoftChop', 'BatchNorm']:
                 delta_dict[i - 1] = self.layers[i].get_delta_backprop_(g_prime, delta_dict[i], z_dict[i - 1])
             else:
