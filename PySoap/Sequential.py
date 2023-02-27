@@ -190,11 +190,8 @@ class Sequential:
         # next layer in the network
         for i in range(self.n, 2, -1):  # i = 1 is the Input class, no backpropagation needed
             grad_dict[i] = self.layers[i].get_weight_grad_(delta_dict[i], z_dict[i - 1])
-
-            if type(self.layers[i - 1]).__name__ == 'Flatten' and type(self.layers[i - 2]).__name__ != 'Input':
-                g_prime = self.layers[i - 2].activation_function_(a_dict[i - 1], grad=True)
-            else:
-                g_prime = self.layers[i - 1].activation_function_(a_dict[i - 1], grad=True)
+            g_prime = self.layers[i - 1].activation_function_(a_dict[i - 1], grad=True)
+            
             if type(self.layers[i]).__name__ in ['SoftChop', 'BatchNorm']:
                 delta_dict[i - 1] = self.layers[i].get_delta_backprop_(g_prime, delta_dict[i], z_dict[i - 1])
             else:
